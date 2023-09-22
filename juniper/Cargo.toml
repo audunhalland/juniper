@@ -45,6 +45,7 @@ schema-language = ["dep:graphql-parser", "dep:void"]
 time = ["dep:time"]
 url = ["dep:url"]
 uuid = ["dep:uuid"]
+protojour-disable-argument-type-check = []
 
 [dependencies]
 anyhow = { version = "1.0.47", optional = true }

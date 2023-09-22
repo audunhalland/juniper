@@ -13,6 +13,7 @@ pub struct ArgumentsOfCorrectType<'a, S: fmt::Debug + 'a> {
     current_args: Option<&'a Vec<Argument<S>>>,
 }
 
+#[allow(unused)]
 pub fn factory<'a, S: fmt::Debug>() -> ArgumentsOfCorrectType<'a, S> {
     ArgumentsOfCorrectType { current_args: None }
 }
@@ -52,6 +53,10 @@ where
         ctx: &mut ValidatorContext<'a, S>,
         (arg_name, arg_value): &'a (Spanning<&'a str>, Spanning<InputValue<S>>),
     ) {
+        if cfg!(feature = "protojour-disable-argument-type-check") {
+            return;
+        }
+
         if let Some(argument_meta) = self
             .current_args
             .and_then(|args| args.iter().find(|a| a.name == arg_name.item))
