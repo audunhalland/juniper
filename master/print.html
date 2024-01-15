@@ -91,7 +91,9 @@
             <div class="sidebar-scrollbox">
                 <ol class="chapter"><li class="chapter-item expanded "><a href="index.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="quickstart.html"><strong aria-hidden="true">2.</strong> Quickstart</a></li><li class="chapter-item expanded "><a href="types/index.html"><strong aria-hidden="true">3.</strong> Type System</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="types/objects/defining_objects.html"><strong aria-hidden="true">3.1.</strong> Defining objects</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="types/objects/complex_fields.html"><strong aria-hidden="true">3.1.1.</strong> Complex fields</a></li><li class="chapter-item expanded "><a href="types/objects/using_contexts.html"><strong aria-hidden="true">3.1.2.</strong> Using contexts</a></li><li class="chapter-item expanded "><a href="types/objects/error_handling.html"><strong aria-hidden="true">3.1.3.</strong> Error handling</a></li></ol></li><li class="chapter-item expanded "><a href="types/other-index.html"><strong aria-hidden="true">3.2.</strong> Other types</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="types/enums.html"><strong aria-hidden="true">3.2.1.</strong> Enums</a></li><li class="chapter-item expanded "><a href="types/interfaces.html"><strong aria-hidden="true">3.2.2.</strong> Interfaces</a></li><li class="chapter-item expanded "><a href="types/input_objects.html"><strong aria-hidden="true">3.2.3.</strong> Input objects</a></li><li class="chapter-item expanded "><a href="types/scalars.html"><strong aria-hidden="true">3.2.4.</strong> Scalars</a></li><li class="chapter-item expanded "><a href="types/unions.html"><strong aria-hidden="true">3.2.5.</strong> Unions</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="schema/schemas_and_mutations.html"><strong aria-hidden="true">4.</strong> Schemas and mutations</a></li><li class="chapter-item expanded "><a href="servers/index.html"><strong aria-hidden="true">5.</strong> Adding A Server</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="servers/official.html"><strong aria-hidden="true">5.1.</strong> Official Server Integrations</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="servers/warp.html"><strong aria-hidden="true">5.1.1.</strong> Warp</a></li><li class="chapter-item expanded "><a href="servers/rocket.html"><strong aria-hidden="true">5.1.2.</strong> Rocket</a></li><li class="chapter-item expanded "><a href="servers/hyper.html"><strong aria-hidden="true">5.1.3.</strong> Hyper</a></li></ol></li><li class="chapter-item expanded "><a href="servers/third-party.html"><strong aria-hidden="true">5.2.</strong> Third Party Integrations</a></li></ol></li><li class="chapter-item expanded "><a href="advanced/index.html"><strong aria-hidden="true">6.</strong> Advanced Topics</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="advanced/introspection.html"><strong aria-hidden="true">6.1.</strong> Introspection</a></li><li class="chapter-item expanded "><a href="advanced/non_struct_objects.html"><strong aria-hidden="true">6.2.</strong> Non-struct objects</a></li><li class="chapter-item expanded "><a href="advanced/implicit_and_explicit_null.html"><strong aria-hidden="true">6.3.</strong> Implicit and explicit null</a></li><li class="chapter-item expanded "><a href="advanced/objects_and_generics.html"><strong aria-hidden="true">6.4.</strong> Objects and generics</a></li><li class="chapter-item expanded "><a href="advanced/multiple_ops_per_request.html"><strong aria-hidden="true">6.5.</strong> Multiple operations per request</a></li><li class="chapter-item expanded "><a href="advanced/dataloaders.html"><strong aria-hidden="true">6.6.</strong> Dataloaders</a></li><li class="chapter-item expanded "><a href="advanced/subscriptions.html"><strong aria-hidden="true">6.7.</strong> Subscriptions</a></li></ol></li></ol>
             </div>
-            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
         </nav>
 
         <!-- Track and set sidebar scroll position -->
@@ -2660,16 +2662,16 @@ fn main() {
         EmptySubscription::&lt;()&gt;::new(),
     );
 
-    // Convert the Rust schema into the GraphQL Schema Language.
-    let result = schema.as_schema_language();
+    // Convert the Rust schema into the GraphQL Schema Definition Language.
+    let result = schema.as_sdl();
 
     let expected = &quot;\
-type Query {
-  hello: String!
-}
-
 schema {
   query: Query
+}
+
+type Query {
+  hello: String!
 }
 &quot;;
 <span class="boring">  #[cfg(not(target_os = &quot;windows&quot;))]
@@ -2728,7 +2730,7 @@ channel.</p>
 juniper = &quot;0.16.0&quot;
 juniper_rocket = &quot;0.9.0&quot;
 </code></pre>
-<p>Included in the source is a <a href="https://github.com/graphql-rust/juniper/blob/master/juniper_rocket/examples/rocket_server.rs">small example</a> which sets up a basic GraphQL and <a href="https://github.com/graphql/graphiql">GraphiQL</a> handler.</p>
+<p>Included in the source is a <a href="https://github.com/graphql-rust/juniper/blob/master/juniper_rocket/examples/simple.rs">small example</a> which sets up a basic GraphQL and <a href="https://github.com/graphql/graphiql">GraphiQL</a> handler.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="integrating-with-hyper"><a class="header" href="#integrating-with-hyper">Integrating with Hyper</a></h1>
 <p><a href="https://hyper.rs/">Hyper</a> is a fast HTTP implementation that many other Rust web frameworks
 leverage. It offers asynchronous I/O via the tokio runtime and works on
