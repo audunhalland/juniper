@@ -19,7 +19,6 @@ use juniper_axum::{
     extract::JuniperRequest, graphiql, playground, response::JuniperResponse, subscriptions,
 };
 use juniper_graphql_ws::ConnectionConfig;
-use tokio::net::TcpListener;
 
 type Schema = RootNode<Query, EmptyMutation<Database>, Subscription>;
 
@@ -69,7 +68,7 @@ async fn main() {
     let app = Router::new()
         .route(
             "/graphql",
-            on(MethodFilter::GET.or(MethodFilter::POST), custom_graphql),
+            on(MethodFilter::GET | MethodFilter::POST, custom_graphql),
         )
         .route("/subscriptions", get(custom_subscriptions))
         .route("/graphiql", get(graphiql("/graphql", "/subscriptions")))
@@ -79,11 +78,9 @@ async fn main() {
         .layer(Extension(database));
 
     let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
-    let listener = TcpListener::bind(addr)
-        .await
-        .unwrap_or_else(|e| panic!("failed to listen on {addr}: {e}"));
     tracing::info!("listening on {addr}");
-    axum::serve(listener, app)
+    axum::Server::bind(&addr)
+        .serve(app.into_make_service())
         .await
-        .unwrap_or_else(|e| panic!("failed to run `axum::serve`: {e}"));
+        .unwrap_or_else(|e| panic!("failed to run `axum::Server`: {e}"));
 }
