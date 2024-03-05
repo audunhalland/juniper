@@ -124,7 +124,7 @@ where [`Connection`][Connection] is a `Stream` of values returned by the operati
 #         Box::pin(stream)
 #     }
 # }
-type Schema = RootNode<'static, Query, EmptyMutation<Database>, Subscription>;
+type Schema = RootNode<Query, EmptyMutation<Database>, Subscription>;
 
 fn schema() -> Schema {
     Schema::new(Query, EmptyMutation::new(), Subscription)

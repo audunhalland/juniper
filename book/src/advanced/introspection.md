@@ -58,7 +58,6 @@ impl Query {
 }
 
 type Schema = juniper::RootNode<
-    'static, 
     Query, 
     EmptyMutation<Context>, 
     EmptySubscription<Context>
