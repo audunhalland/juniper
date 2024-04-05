@@ -52,6 +52,10 @@ where
         ctx: &mut ValidatorContext<'a, S>,
         (arg_name, arg_value): &'a (Spanning<&'a str>, Spanning<InputValue<S>>),
     ) {
+        if ctx.argument_validation_disabled {
+            return;
+        }
+
         if let Some(argument_meta) = self
             .current_args
             .and_then(|args| args.iter().find(|a| a.name == arg_name.item))

@@ -43,6 +43,8 @@ pub struct RootNode<
     pub schema: SchemaType<'a, S>,
     #[doc(hidden)]
     pub introspection_disabled: bool,
+    #[doc(hidden)]
+    pub argument_validation_disabled: bool,
 }
 
 /// Metadata for a schema
@@ -159,6 +161,7 @@ where
             mutation_info,
             subscription_info,
             introspection_disabled: false,
+            argument_validation_disabled: false,
         }
     }
 

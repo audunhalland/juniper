@@ -161,6 +161,7 @@ where
 
     {
         let mut ctx = ValidatorContext::new(&root_node.schema, &document);
+        ctx.argument_validation_disabled = root_node.argument_validation_disabled;
         visit_all_rules(&mut ctx, &document);
         if root_node.introspection_disabled {
             visit_rule(
@@ -211,6 +212,7 @@ where
 
     {
         let mut ctx = ValidatorContext::new(&root_node.schema, &document);
+        ctx.argument_validation_disabled = root_node.argument_validation_disabled;
         visit_all_rules(&mut ctx, &document);
         if root_node.introspection_disabled {
             visit_rule(
@@ -263,6 +265,7 @@ where
 
     {
         let mut ctx = ValidatorContext::new(&root_node.schema, &document);
+        ctx.argument_validation_disabled = root_node.argument_validation_disabled;
         visit_all_rules(&mut ctx, &document);
         if root_node.introspection_disabled {
             visit_rule(
