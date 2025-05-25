@@ -2,7 +2,6 @@ use std::{borrow::Cow, fmt, hash::Hash, slice, vec};
 
 use arcstr::ArcStr;
 use indexmap::IndexMap;
-use smallvec::SmallVec;
 
 #[cfg(doc)]
 use self::TypeModifier::{List, NonNull};
@@ -22,11 +21,69 @@ pub enum TypeModifier {
     List(Option<usize>),
 }
 
+/// A owned slice of [`TypeModifier`]s.
+#[derive(Clone, Debug)]
+pub enum TypeModifiers {
+    Static(&'static [TypeModifier]),
+    Dynamic(Box<[TypeModifier]>),
+}
+
+impl Default for TypeModifiers {
+    fn default() -> Self {
+        Self::Static(&[])
+    }
+}
+
+impl TypeModifiers {
+    fn wrap(&mut self, modifier: TypeModifier) {
+        *self = match (std::mem::take(self), modifier) {
+            (Self::Static(&[]), TypeModifier::NonNull) => Self::Static(&[TypeModifier::NonNull]),
+            (Self::Static(&[]), TypeModifier::List(None)) => {
+                Self::Static(&[TypeModifier::List(None)])
+            }
+            (Self::Static(&[TypeModifier::NonNull]), TypeModifier::List(None)) => {
+                Self::Static(&[TypeModifier::NonNull, TypeModifier::List(None)])
+            }
+            (Self::Static(slice), modifier) => {
+                let mut vec: Vec<_> = slice.iter().copied().collect();
+                vec.push(modifier);
+                Self::Dynamic(vec.into_boxed_slice())
+            }
+            (Self::Dynamic(slice), modifier) => {
+                let mut vec = slice.into_vec();
+                vec.push(modifier);
+                Self::Dynamic(vec.into_boxed_slice())
+            }
+        };
+    }
+
+    fn pop(&mut self) {
+        *self = match std::mem::take(self) {
+            Self::Static(slice) => Self::Static(&slice[..slice.len() - 1]),
+            Self::Dynamic(slice) if slice.len() == 1 => Self::Static(&[]),
+            Self::Dynamic(slice) => {
+                let mut vec = slice.into_vec();
+                vec.pop();
+                Self::Dynamic(vec.into_boxed_slice())
+            }
+        }
+    }
+}
+
+impl AsRef<[TypeModifier]> for TypeModifiers {
+    fn as_ref(&self) -> &[TypeModifier] {
+        match self {
+            Self::Static(slice) => slice,
+            Self::Dynamic(slice) => slice,
+        }
+    }
+}
+
 /// Type literal in a syntax tree.
 ///
 /// Carries no semantic information and might refer to types that don't exist.
 #[derive(Clone, Copy, Debug)]
-pub struct Type<N = ArcStr, M = SmallVec<[TypeModifier; 2]>> {
+pub struct Type<N = ArcStr, M = TypeModifiers> {
     /// Name of this [`Type`].
     name: N,
 
@@ -156,10 +213,10 @@ impl<N, M: Default> Type<N, M> {
     }
 }
 
-impl<N, M: Extend<TypeModifier>> Type<N, M> {
+impl<N> Type<N, TypeModifiers> {
     /// Wraps this [`Type`] into the provided [`TypeModifier`].
     fn wrap(mut self, modifier: TypeModifier) -> Self {
-        self.modifiers.extend([modifier]);
+        self.modifiers.wrap(modifier);
         self
     }
 
@@ -180,7 +237,7 @@ impl<N: AsRef<str>> Type<N> {
     /// Strips this [`Type`] from [`NonNull`], returning it as a `null`able one.
     pub(crate) fn into_nullable(mut self) -> Self {
         if self.is_non_null() {
-            _ = self.modifiers.pop();
+            self.modifiers.pop();
         }
         self
     }
